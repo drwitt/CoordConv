@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 
 # Copyright (c) 2019 Uber Technologies, Inc.
-# 
+#
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# code to generate dots and squares dataset 
+# code to generate dots and squares dataset
 import copy
 import cv2
 import os, sys
@@ -54,7 +54,7 @@ class canvas(object):
         self.bgcolor = bgcolor
 
         #white background
-        self.img = np.ones((img_size,img_size,3)) 
+        self.img = np.ones((img_size,img_size,3))
 
         self.overlap_allowed = overlap_allowed
         self.clear()
@@ -111,7 +111,7 @@ class canvas(object):
         #note: objects are sorted by increasing depth -- this will determine
         #ordering of returned one-hot feature maps
         self.objects.sort(key=lambda x:x.depth)
-        
+
         onehots = []
         for obj in self.objects:
             onehots.append(obj.generate_center_onehot())
@@ -167,7 +167,7 @@ class visual_object(object):
     def generate_center_onehot(self):
         """generate a one-hot image"""
 
-        #note: numpy image array indices follow (y,x) convention 
+        #note: numpy image array indices follow (y,x) convention
         #but cv2 coordinates follow (x,y) convention
         field = np.zeros((img_size,img_size,1))
         field[self.center[1],self.center[0],0]=1.0
@@ -195,7 +195,7 @@ class multiobject_fixed_generator(object):
         obj: object to drag over the canvas to generate data
         """
         self.canvas = canvas(img_size,bgcolor=bgcolor,overlap_allowed=False)
-        self.data = [] 
+        self.data = []
         self.objects = objects
         self.num_objects = len(objects)
         self.num_samples = num_samples
@@ -211,7 +211,7 @@ class multiobject_fixed_generator(object):
         for _idx in range(self.num_samples):
 
             self.canvas.clear()
-            
+
             for obj in self.objects:
                 self.canvas.place_object(obj)
 
@@ -238,7 +238,7 @@ class multiobject_random_generator(object):
         obj: object to drag over the canvas to generate data
         """
         self.canvas = canvas(img_size,bgcolor=bgcolor,overlap_allowed=False)
-        self.data = [] 
+        self.data = []
         self.num_objects = num_objects
         self.num_samples = num_samples
         self.img_size = img_size
@@ -283,7 +283,7 @@ class objectsweep_generator(object):
         obj: object to drag over the canvas to generate data
         """
         self.canvas = canvas(img_size,bgcolor=bgcolor)
-        self.data = [] 
+        self.data = []
         self.object = obj
         self.img_size = img_size
         self.generate()
@@ -363,7 +363,7 @@ class dataset_writer(object):
         self.to_h5(filename)
 
     def to_numpy(self,datapoints,shuffle=True):
-        fields = defaultdict(list) 
+        fields = defaultdict(list)
 
         for d in datapoints:
             for field in d:
@@ -372,7 +372,7 @@ class dataset_writer(object):
         np_dict = {}
 
         np.random.seed(seed=MAGIC_SEED_OF_GREATNESS)
-        order = np.random.permutation(len(fields[fields.keys()[0]]))
+        order = np.random.permutation(len(list(fields[fields.keys())[0]]))
 
         for field in fields:
             np_dict[field] = np.array(fields[field])
@@ -383,7 +383,7 @@ class dataset_writer(object):
         return np_dict
 
     def to_h5(self,filename):
-        
+
         _dir = os.path.abspath(os.path.dirname(__file__))
         _filename = os.path.join(_dir, filename+".h5")
 
@@ -467,7 +467,7 @@ if __name__=='__main__':
 
         def generate_coordinate_split(_type='uniform'):
 
-            #create train/val split 
+            #create train/val split
             coord_range = range(obj_size,img_size-obj_size)
             #create mesh of all possible x,y object coordinates
             x,y = np.meshgrid(coord_range,coord_range)
@@ -480,7 +480,7 @@ if __name__=='__main__':
 
             training_coords = set()
             val_coords = set()
-        
+
             if _type=='uniform':
                 val_split_ratio = 0.1
                 total_examples = x.shape[0]
@@ -521,4 +521,3 @@ if __name__=='__main__':
                 split_function = lambda x:checkarray_split(x,training_coords)
 
                 writer = dataset_writer(generator,split_function,h5_name)
-

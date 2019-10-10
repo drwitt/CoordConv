@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 
 # Copyright (c) 2019 Uber Technologies, Inc.
-# 
+#
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# code to generate sort-of-clevr dataset  
+# code to generate sort-of-clevr dataset
 # modified from: https://github.com/kimhc6028/relational-networks.git
 # limited to two colors, two shapes
 
@@ -28,7 +28,7 @@ import cv2
 import os, sys
 import numpy as np
 import random
-import cPickle as pickle
+import pickle
 import h5py
 import scipy.misc
 from IPython import embed
@@ -41,7 +41,7 @@ from general.util import mkdir_p
 train_size = 50000
 test_size = 200
 img_size = 64
-size = 10 
+size = 10
 
 #dirs = os.path.join("./", "sort_of_clevr")
 dirs = os.path.join(os.path.abspath(os.path.dirname(__file__)), "sort_of_clevr")
@@ -62,7 +62,7 @@ colors = [
 def center_generate(objects):
     while True:
         pas = True
-        center = np.random.randint(0+size, img_size - size, 2)        
+        center = np.random.randint(0+size, img_size - size, 2)
         if len(objects) > 0:
             for name,c,shape in objects:
                 if ((center - c) ** 2).sum() < ((size * 2) ** 2):
@@ -75,7 +75,7 @@ def center_generate(objects):
 def build_dataset_img_only():
     objects = []
     img = np.ones((img_size,img_size,3)) * 255
-    for color_id,color in enumerate(colors):  
+    for color_id,color in enumerate(colors):
         center = center_generate(objects)
         if random.random()<0.5:
             start = (center[0]-size, center[1]-size)
@@ -86,7 +86,7 @@ def build_dataset_img_only():
             center_ = (center[0], center[1])
             cv2.circle(img, center_, size, color, -1)
             objects.append((color_id,center,'c'))
-    
+
     img = img/127.5 - 1.
     return (img, objects)
 
@@ -121,7 +121,7 @@ for img_count in range(10):
     image = (train_x[img_count]+1)*127.5
     #cv2.imwrite(path, image)
     scipy.misc.imsave(path1, image)
-    
+
     #path = os.path.join(dirs,'img{}_512x512bgr.png'.format(img_count))
     path1 = os.path.join(dirs,'img{}_512x512rgb.png'.format(img_count))
     image = cv2.resize((train_x[img_count]+1)*127.5, (512,512))
