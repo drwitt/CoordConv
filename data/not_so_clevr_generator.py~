@@ -372,7 +372,7 @@ class dataset_writer(object):
         np_dict = {}
 
         np.random.seed(seed=MAGIC_SEED_OF_GREATNESS)
-        order = np.random.permutation(len(fields[list(fields.keys())[0]]))
+        order = np.random.permutation(len(list(fields[fields.keys())[0]]))
 
         for field in fields:
             np_dict[field] = np.array(fields[field])
